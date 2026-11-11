@@ -70,12 +70,10 @@ fbq('track', 'PageView');
 
   document.getElementById('entrar').href = LINK;
 
-  // Pixel: registra o toque em "Entrar no grupo" como Lead antes de abrir o WhatsApp
-  document.getElementById('entrar').addEventListener('click', function(e){
-    if (!window.fbq) return;
-    e.preventDefault();
-    fbq('track', 'Lead', {content_name: 'Grupo WhatsApp', method: 'botao'});
-    setTimeout(function(){ location.href = LINK; }, 300);
+  // Pixel: registra o toque em "Entrar no grupo" como Lead sem segurar a navegação —
+  // o link precisa abrir direto do toque, senão o iPhone não abre o app do WhatsApp
+  document.getElementById('entrar').addEventListener('click', function(){
+    if (window.fbq) fbq('track', 'Lead', {content_name: 'Grupo WhatsApp', method: 'botao'});
   });
 
   const qr = qrcode(0,'M'); qr.addData(LINK); qr.make();
@@ -83,7 +81,7 @@ fbq('track', 'PageView');
 
   const btn = document.getElementById('copiar');
   btn.onclick = async () => {
-    if (window.fbq) fbq('track', 'Lead', {content_name: 'Grupo WhatsApp', method: 'copiar'});
+    if (window.fbq) fbq('trackCustom', 'CopiouLink', {content_name: 'Grupo WhatsApp'});
     try { await navigator.clipboard.writeText(LINK); }
     catch(e){ const t=document.createElement('textarea'); t.value=LINK; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
     const old = btn.textContent; btn.textContent = 'Link copiado!';
